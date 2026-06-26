@@ -1,0 +1,185 @@
+<%- include('partials/header') %>
+
+<section class="admin-section">
+    <div class="admin-header">
+        <div>
+            <h1><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
+            <p>Manage your travel platform</p>
+        </div>
+        <div class="admin-date">
+            <i class="fas fa-calendar-day"></i>
+            <%= new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+        </div>
+    </div>
+    
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+            <div class="stat-info">
+                <span class="stat-number"><%= stats.totalUsers %></span>
+                <span class="stat-label">Total Users</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fas fa-suitcase"></i></div>
+            <div class="stat-info">
+                <span class="stat-number"><%= stats.totalPackages %></span>
+                <span class="stat-label">Packages</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon purple"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info">
+                <span class="stat-number"><%= stats.totalBookings %></span>
+                <span class="stat-label">Bookings</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon yellow"><i class="fas fa-envelope"></i></div>
+            <div class="stat-info">
+                <span class="stat-number"><%= stats.totalInquiries %></span>
+                <span class="stat-label">Inquiries</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Package -->
+    <div class="admin-card">
+        <div class="card-header">
+            <h3><i class="fas fa-plus-circle"></i> Add New Package</h3>
+            <span class="card-badge">Admin Only</span>
+        </div>
+        <form action="/admin/package" method="POST" class="admin-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Package Title</label>
+                    <input type="text" name="title" placeholder="e.g., Maldives Island Getaway" required>
+                </div>
+                <div class="form-group">
+                    <label>Destination</label>
+                    <input type="text" name="destination" placeholder="e.g., Male, Maldives" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Description</label>
+                    <textarea name="description" placeholder="Describe the package in detail..." rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Activities</label>
+                    <input type="text" name="activities" placeholder="e.g., Snorkeling, Diving, Beach">
+                </div>
+                <div class="form-group">
+                    <label>Price ($)</label>
+                    <input type="number" name="price" placeholder="0.00" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Duration (Days)</label>
+                    <input type="number" name="duration_days" placeholder="5" required>
+                </div>
+                <div class="form-group">
+                    <label>Available Seats</label>
+                    <input type="number" name="available_seats" placeholder="10" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Image URL</label>
+                    <input type="text" name="image_url" placeholder="https://images.unsplash.com/...">
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-plus"></i> Add Package
+            </button>
+        </form>
+    </div>
+    
+    <!-- Recent Bookings -->
+    <div class="admin-card">
+        <div class="card-header">
+            <h3><i class="fas fa-list"></i> Recent Bookings</h3>
+            <span class="card-badge"><%= bookings.length %> total</span>
+        </div>
+        <div class="table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Package</th>
+                        <th>Travelers</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% bookings.slice(0, 10).forEach(function(booking) { %>
+                        <tr>
+                            <td><%= booking.name %></td>
+                            <td><%= booking.title %></td>
+                            <td><%= booking.travelers %></td>
+                            <td><%= new Date(booking.booking_date).toLocaleDateString() %></td>
+                            <td>$<%= booking.total_price %></td>
+                            <td>
+                                <span class="status-badge status-<%= booking.status %>">
+                                    <%= booking.status %>
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                            </td>
+                        </tr>
+                    <% }) %>
+                    <% if (bookings.length === 0) { %>
+                        <tr>
+                            <td colspan="7" class="empty-row">No bookings found</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Recent Inquiries -->
+    <div class="admin-card">
+        <div class="card-header">
+            <h3><i class="fas fa-envelope"></i> Recent Inquiries</h3>
+            <span class="card-badge"><%= inquiries.length %> unread</span>
+        </div>
+        <div class="table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Subject</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% inquiries.slice(0, 10).forEach(function(inquiry) { %>
+                        <tr>
+                            <td><%= inquiry.name %></td>
+                            <td><strong><%= inquiry.subject %></strong></td>
+                            <td><%= inquiry.message.substring(0, 60) %>...</td>
+                            <td>
+                                <span class="status-badge status-<%= inquiry.status %>">
+                                    <%= inquiry.status %>
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn-icon"><i class="fas fa-reply"></i></button>
+                            </td>
+                        </tr>
+                    <% }) %>
+                    <% if (inquiries.length === 0) { %>
+                        <tr>
+                            <td colspan="5" class="empty-row">No inquiries found</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

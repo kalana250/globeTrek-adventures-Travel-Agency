@@ -1,0 +1,117 @@
+<%- include('partials/header') %>
+
+<section class="packages-hero">
+    <div class="packages-hero-content">
+        <h1>Explore Our <span class="highlight">Travel Packages</span></h1>
+        <p>Discover amazing destinations and create unforgettable memories with our curated travel experiences</p>
+    </div>
+</section>
+
+<section class="packages-section">
+    <!-- Search and Filter -->
+    <div class="filter-section">
+        <form class="filter-form" method="GET" action="/packages">
+            <div class="filter-group">
+                <div class="filter-input">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" placeholder="Search packages..." value="<%= filters.search || '' %>">
+                </div>
+                
+                <div class="filter-input">
+                    <i class="fas fa-map-pin"></i>
+                    <select name="destination">
+                        <option value="">All Destinations</option>
+                        <% destinations.forEach(function(dest) { %>
+                            <option value="<%= dest.destination %>" <%= filters.destination === dest.destination ? 'selected' : '' %>>
+                                <%= dest.destination %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                
+                <div class="filter-input">
+                    <i class="fas fa-dollar-sign"></i>
+                    <input type="number" name="minPrice" placeholder="Min Price" value="<%= filters.minPrice || '' %>">
+                </div>
+                
+                <div class="filter-input">
+                    <i class="fas fa-dollar-sign"></i>
+                    <input type="number" name="maxPrice" placeholder="Max Price" value="<%= filters.maxPrice || '' %>">
+                </div>
+                
+                <button type="submit" class="btn-filter">
+                    <i class="fas fa-sliders-h"></i> Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Header -->
+    <div class="results-header">
+        <span class="results-count">
+            <i class="fas fa-suitcase"></i>
+            <%= packages.length %> packages found
+        </span>
+        <span class="results-sort">
+            <i class="fas fa-sort"></i>
+            <select>
+                <option>Sort by: Recommended</option>
+                <option>Price: Low to High</option>
+                <option>Price: High to Low</option>
+                <option>Duration</option>
+            </select>
+        </span>
+    </div>
+
+    <!-- Package Grid -->
+    <div class="package-grid">
+        <% if (packages.length === 0) { %>
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h3>No packages found</h3>
+                <p>Try adjusting your search or filter criteria</p>
+                <a href="/packages" class="btn-clear-filters">
+                    <i class="fas fa-undo"></i> Clear Filters
+                </a>
+            </div>
+        <% } else { %>
+            <% packages.forEach(function(pkg) { %>
+                <div class="package-card">
+                    <div class="package-image-wrapper">
+                        <img src="<%= pkg.image_url || '/images/default.jpg' %>" alt="<%= pkg.title %>" class="package-image">
+                        <div class="package-badge">
+                            <i class="fas fa-clock"></i> <%= pkg.duration_days %> Days
+                        </div>
+                        <div class="package-overlay">
+                            <a href="/packages/<%= pkg.id %>" class="btn-view-details">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                    <div class="package-info">
+                        <div class="package-meta">
+                            <span class="destination"><i class="fas fa-map-pin"></i> <%= pkg.destination %></span>
+                            <span class="seats"><i class="fas fa-users"></i> <%= pkg.available_seats || 'Limited' %> seats</span>
+                        </div>
+                        <h3><%= pkg.title %></h3>
+                        <p class="description"><%= pkg.description ? pkg.description.substring(0, 100) : '' %>...</p>
+                        <div class="package-tags">
+                            <span class="tag"><i class="fas fa-tag"></i> Best Value</span>
+                        </div>
+                        <div class="package-footer">
+                            <div class="price-info">
+                                <span class="price">$<%= pkg.price %></span>
+                                <span class="per-person">/ person</span>
+                            </div>
+                            <a href="/packages/<%= pkg.id %>" class="btn-book">
+                                Book Now <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } %>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

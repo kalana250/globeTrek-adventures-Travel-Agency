@@ -1,0 +1,125 @@
+<%- include('partials/header') %>
+
+<section class="dashboard-section">
+    <div class="dashboard-header">
+        <div class="dashboard-welcome">
+            <div class="user-avatar">
+                <%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %>
+            </div>
+            <div class="welcome-text">
+                <h1>Welcome back, <%= user.name %>!</h1>
+                <p><i class="fas fa-user-tag"></i> <%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %></p>
+            </div>
+        </div>
+        <div class="dashboard-actions">
+            <a href="/packages" class="btn-action">
+                <i class="fas fa-plus-circle"></i> New Booking
+            </a>
+        </div>
+    </div>
+    
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fas fa-suitcase"></i></div>
+            <div class="stat-info">
+                <span class="stat-number"><%= bookings.length %></span>
+                <span class="stat-label">Total Bookings</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info">
+                <span class="stat-number">
+                    <%= bookings.filter(b => b.status === 'confirmed').length %>
+                </span>
+                <span class="stat-label">Confirmed</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon yellow"><i class="fas fa-clock"></i></div>
+            <div class="stat-info">
+                <span class="stat-number">
+                    <%= bookings.filter(b => b.status === 'pending').length %>
+                </span>
+                <span class="stat-label">Pending</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon purple"><i class="fas fa-calendar-alt"></i></div>
+            <div class="stat-info">
+                <span class="stat-number">
+                    <% if (bookings.length > 0) { %>
+                        <%= new Date(Math.min(...bookings.map(b => new Date(b.booking_date)))).toLocaleDateString() %>
+                    <% } else { %>
+                        N/A
+                    <% } %>
+                </span>
+                <span class="stat-label">Next Trip</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bookings -->
+    <div class="dashboard-content">
+        <div class="section-header">
+            <h3><i class="fas fa-history"></i> My Bookings</h3>
+            <span class="badge"><%= bookings.length %> total</span>
+        </div>
+        
+        <% if (bookings.length === 0) { %>
+            <div class="empty-state">
+                <i class="fas fa-plane"></i>
+                <h3>No Bookings Yet</h3>
+                <p>Start planning your next adventure today!</p>
+                <a href="/packages" class="btn-primary">
+                    <i class="fas fa-search"></i> Browse Packages
+                </a>
+            </div>
+        <% } else { %>
+            <div class="bookings-table-wrapper">
+                <table class="bookings-table">
+                    <thead>
+                        <tr>
+                            <th>Package</th>
+                            <th>Destination</th>
+                            <th>Date</th>
+                            <th>Travelers</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% bookings.forEach(function(booking) { %>
+                            <tr>
+                                <td><strong><%= booking.title %></strong></td>
+                                <td><i class="fas fa-map-pin"></i> <%= booking.destination %></td>
+                                <td><%= new Date(booking.booking_date).toLocaleDateString() %></td>
+                                <td><%= booking.travelers %></td>
+                                <td>$<%= booking.total_price %></td>
+                                <td>
+                                    <span class="status-badge status-<%= booking.status %>">
+                                        <%= booking.status.charAt(0).toUpperCase() + booking.status.slice(1) %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="#" class="btn-action-small">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <% if (booking.status === 'pending') { %>
+                                        <a href="#" class="btn-action-small cancel">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,303 @@
+<%- include('partials/header') %>
+
+<section class="inquiry-hero">
+    <div class="inquiry-hero-content">
+        <div class="hero-badge">
+            <i class="fas fa-headset"></i> 24/7 Support Available
+        </div>
+        <h1>We'd Love to <span class="highlight">Hear From You</span></h1>
+        <p>Have questions about your next adventure? Our travel experts are here to help you plan the perfect trip.</p>
+    </div>
+</section>
+
+<section class="inquiry-section">
+    <div class="inquiry-container">
+        <div class="inquiry-grid">
+            <!-- Contact Info Cards -->
+            <div class="inquiry-info">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h4>Phone</h4>
+                    <p>+94 77 123 4567</p>
+                    <span>Mon-Sat 9AM - 6PM</span>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h4>Email</h4>
+                    <p>info@globetrek.com</p>
+                    <span>We reply within 24h</span>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h4>Location</h4>
+                    <p>Negombo, Sri Lanka</p>
+                    <span>Visit our office</span>
+                </div>
+                
+                <div class="info-card social-info">
+                    <h4>Follow Our Journey</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link youtube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link tiktok"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="social-link twitter"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Response Time -->
+                <div class="info-card response-card">
+                    <div class="response-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">24h</span>
+                            <span class="stat-label">Avg Response Time</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">98%</span>
+                            <span class="stat-label">Satisfaction Rate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Form -->
+            <div class="inquiry-form-container">
+                <div class="inquiry-card">
+                    <div class="form-header">
+                        <h2><i class="fas fa-paper-plane"></i> Send Us a Message</h2>
+                        <p>Fill out the form below and we'll get back to you within 24 hours.</p>
+                    </div>
+                    
+                    <% if (success) { %>
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Message Sent!</strong>
+                                <p><%= success %></p>
+                            </div>
+                        </div>
+                    <% } %>
+                    
+                    <% if (error) { %>
+                        <div class="alert alert-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <div>
+                                <strong>Oops!</strong>
+                                <p><%= error %></p>
+                            </div>
+                        </div>
+                    <% } %>
+                    
+                    <form action="/contact" method="POST" class="inquiry-form" id="contactForm">
+                        <div class="form-group">
+                            <label for="subject">
+                                <i class="fas fa-heading"></i> Subject
+                                <span class="required">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-pencil-alt input-icon"></i>
+                                <input type="text" id="subject" name="subject" 
+                                       placeholder="What's this about? (e.g., Booking Inquiry, Package Details)"
+                                       required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">
+                                <i class="fas fa-comment"></i> Message
+                                <span class="required">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-quote-left input-icon"></i>
+                                <textarea id="message" name="message" rows="5" 
+                                          placeholder="Tell us about your travel plans, questions, or feedback..."
+                                          required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Optional: Quick Select Topics -->
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Quick Topic</label>
+                            <div class="topic-tags">
+                                <span class="topic-tag" onclick="setTopic('Booking Inquiry')">
+                                    <i class="fas fa-suitcase"></i> Booking
+                                </span>
+                                <span class="topic-tag" onclick="setTopic('Package Details')">
+                                    <i class="fas fa-info-circle"></i> Package Info
+                                </span>
+                                <span class="topic-tag" onclick="setTopic('Custom Trip')">
+                                    <i class="fas fa-cog"></i> Custom Trip
+                                </span>
+                                <span class="topic-tag" onclick="setTopic('General Question')">
+                                    <i class="fas fa-question-circle"></i> General
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn-submit" id="submitBtn">
+                            <i class="fas fa-paper-plane"></i> 
+                            <span>Send Message</span>
+                            <span class="btn-loader" style="display:none;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="section-header">
+        <span class="section-subtitle">FAQ</span>
+        <h2>Frequently Asked Questions</h2>
+        <p>Find quick answers to the most common questions about our services</p>
+    </div>
+    <div class="faq-grid">
+        <div class="faq-item">
+            <div class="faq-question">
+                <div class="faq-icon"><i class="fas fa-plus"></i></div>
+                <h4>How do I book a package?</h4>
+            </div>
+            <div class="faq-answer">
+                <p>Simply browse our packages, select your preferred trip, and click "Book Now". You'll need to create an account or log in to complete your booking. We'll send you a confirmation email with all the details.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">
+                <div class="faq-icon"><i class="fas fa-plus"></i></div>
+                <h4>What payment methods do you accept?</h4>
+            </div>
+            <div class="faq-answer">
+                <p>We accept all major credit cards (Visa, Mastercard, Amex), PayPal, and bank transfers. All payments are processed securely through our encrypted payment system.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">
+                <div class="faq-icon"><i class="fas fa-plus"></i></div>
+                <h4>Can I cancel my booking?</h4>
+            </div>
+            <div class="faq-answer">
+                <p>Yes, you can cancel your booking up to 72 hours before departure for a full refund. Please check our cancellation policy for more details on specific packages.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">
+                <div class="faq-icon"><i class="fas fa-plus"></i></div>
+                <h4>Do you offer group discounts?</h4>
+            </div>
+            <div class="faq-answer">
+                <p>Yes! We offer special rates for groups of 6 or more. Contact our team for a custom quote tailored to your group's needs.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">
+                <div class="faq-icon"><i class="fas fa-plus"></i></div>
+                <h4>Is travel insurance included?</h4>
+            </div>
+            <div class="faq-answer">
+                <p>Travel insurance is not automatically included, but we highly recommend it. We can help you find the best insurance plan for your trip. Ask us for more details!</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">
+                <div class="faq-icon"><i class="fas fa-plus"></i></div>
+                <h4>What about visa requirements?</h4>
+            </div>
+            <div class="faq-answer">
+                <p>Our team will provide you with all the visa information you need for your destination. We'll also assist you with the application process if needed.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Auto-set topic
+function setTopic(topic) {
+    document.getElementById('subject').value = topic;
+    document.getElementById('subject').focus();
+}
+
+// Form submission with loading state
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    const btn = document.getElementById('submitBtn');
+    const btnText = btn.querySelector('span');
+    const btnLoader = btn.querySelector('.btn-loader');
+    
+    btnText.style.display = 'none';
+    btnLoader.style.display = 'inline';
+    btn.disabled = true;
+});
+
+// FAQ Accordion - Improved
+document.querySelectorAll('.faq-item').forEach(item => {
+    const question = item.querySelector('.faq-question');
+    const answer = item.querySelector('.faq-answer');
+    const icon = question.querySelector('.faq-icon i');
+    
+    // Set initial state
+    answer.style.maxHeight = '0';
+    answer.style.opacity = '0';
+    
+    question.addEventListener('click', function() {
+        const isOpen = answer.style.maxHeight !== '0px' && answer.style.maxHeight !== '';
+        
+        // Close all others
+        document.querySelectorAll('.faq-item').forEach(otherItem => {
+            if (otherItem !== item) {
+                const otherAnswer = otherItem.querySelector('.faq-answer');
+                const otherIcon = otherItem.querySelector('.faq-icon i');
+                otherAnswer.style.maxHeight = '0';
+                otherAnswer.style.opacity = '0';
+                otherIcon.className = 'fas fa-plus';
+            }
+        });
+        
+        if (isOpen) {
+            answer.style.maxHeight = '0';
+            answer.style.opacity = '0';
+            icon.className = 'fas fa-plus';
+        } else {
+            answer.style.maxHeight = answer.scrollHeight + 'px';
+            answer.style.opacity = '1';
+            icon.className = 'fas fa-minus';
+        }
+    });
+});
+
+// Character counter for message
+document.getElementById('message').addEventListener('input', function() {
+    const maxLength = 500;
+    const currentLength = this.value.length;
+    const counter = document.getElementById('char-counter');
+    
+    if (!counter) {
+        const counterEl = document.createElement('span');
+        counterEl.id = 'char-counter';
+        counterEl.style.cssText = 'font-size:0.8rem;color:#94a3b8;display:block;text-align:right;margin-top:4px;';
+        this.parentNode.appendChild(counterEl);
+    }
+    
+    const counterEl = document.getElementById('char-counter');
+    const remaining = maxLength - currentLength;
+    counterEl.textContent = `${remaining} characters remaining`;
+    
+    if (remaining < 20) {
+        counterEl.style.color = '#ef4444';
+    } else {
+        counterEl.style.color = '#94a3b8';
+    }
+});
+</script>
+
+<%- include('partials/footer') %>

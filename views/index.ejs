@@ -1,0 +1,199 @@
+<%- include('partials/header') %>
+
+<!-- Hero Section with Slideshow -->
+<section class="hero">
+    <!-- Slideshow Images -->
+    <div class="hero-slideshow">
+        <div class="slide active" style="background-image: url('https://assets.cntraveller.in/photos/64ec81607751da540426cd89/16:9/w_1920,c_limit/1288609237');"></div>
+        <div class="slide" style="background-image: url('https://images.pexels.com/photos/31301783/pexels-photo-31301783.jpeg');"></div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1600&h=800&fit=crop&crop=center');"></div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&h=800&fit=crop&crop=center');"></div>
+        <div class="slide" style="background-image: url('https://c4.wallpaperflare.com/wallpaper/462/724/55/5bd332fa4f196-wallpaper-preview.jpg');"></div>
+        <div class="slide" style="background-image: url('https://www.peru.travel/Contenido/Noticia/Imagen/en/2406/1.0/Principal/machupicchu-peru-desktop.jpg');"></div>
+    </div>
+    
+    <!-- Dark Overlay -->
+    <div class="hero-overlay"></div>
+    
+    <!-- Hero Content -->
+    <div class="hero-content">
+        <div class="hero-badge">
+            <i class="fas fa-trophy"></i> Award-Winning Travel Agency
+        </div>
+        <h1>Discover Your <span class="highlight">Next Adventure</span></h1>
+        <p>Explore breathtaking destinations, create unforgettable memories, and experience the world like never before with GlobeTrek Adventures.</p>
+        <div class="hero-buttons">
+            <a href="/packages" class="btn-primary-hero">
+                <i class="fas fa-rocket"></i> Explore Packages
+            </a>
+            <a href="#featured" class="btn-secondary-hero">
+                <i class="fas fa-play"></i> See More
+            </a>
+        </div>
+        <div class="hero-stats">
+            <div class="stat">
+                <span class="stat-number">500+</span>
+                <span class="stat-label">Happy Travelers</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">50+</span>
+                <span class="stat-label">Destinations</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">98%</span>
+                <span class="stat-label">Satisfaction Rate</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slideshow Dots -->
+    <div class="hero-dots">
+        <span class="dot active" data-slide="0"></span>
+        <span class="dot" data-slide="1"></span>
+        <span class="dot" data-slide="2"></span>
+        <span class="dot" data-slide="3"></span>
+        <span class="dot" data-slide="4"></span>
+        <span class="dot" data-slide="5"></span>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="section-header">
+        <span class="section-subtitle">WHY CHOOSE US</span>
+        <h2>Your Perfect Travel Experience Starts Here</h2>
+        <p>We provide exceptional travel services tailored to your needs</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
+            <h3>Curated Packages</h3>
+            <p>Hand-picked destinations with carefully crafted itineraries</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-headset"></i></div>
+            <h3>24/7 Support</h3>
+            <p>Round-the-clock assistance for all your travel needs</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-lock"></i></div>
+            <h3>Secure Booking</h3>
+            <p>Safe and secure payment methods for your peace of mind</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-gem"></i></div>
+            <h3>Best Price</h3>
+            <p>Competitive prices without compromising on quality</p>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- Featured Packages -->
+<section class="featured-packages" id="featured">
+    <div class="section-header">
+        <span class="section-subtitle">POPULAR PACKAGES</span>
+        <h2>Explore Our Top Destinations</h2>
+        <p>Discover the most sought-after travel experiences around the world</p>
+    </div>
+    <div class="package-grid">
+        <% packages.forEach(function(pkg) { %>
+            <div class="package-card">
+                <div class="package-image-wrapper">
+                    <img src="<%= pkg.image_url || '/images/default.jpg' %>" alt="<%= pkg.title %>" class="package-image">
+                    <div class="package-badge">
+                        <i class="fas fa-star"></i> Featured
+                    </div>
+                    <div class="package-overlay">
+                        <a href="/packages/<%= pkg.id %>" class="btn-view-details">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                    </div>
+                </div>
+                <div class="package-info">
+                    <div class="package-meta">
+                        <span class="destination"><i class="fas fa-map-pin"></i> <%= pkg.destination %></span>
+                        <span class="duration"><i class="far fa-clock"></i> <%= pkg.duration_days %> Days</span>
+                    </div>
+                    <h3><%= pkg.title %></h3>
+                    <p class="description"><%= pkg.description ? pkg.description.substring(0, 80) : '' %>...</p>
+                    <div class="package-footer">
+                        <span class="price">$<%= pkg.price %></span>
+                        <span class="per-person">per person</span>
+                        <a href="/packages/<%= pkg.id %>" class="btn-book">
+                            <i class="fas fa-arrow-right"></i> Book Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+    
+    <div class="view-all-container">
+        <a href="/packages" class="btn-view-all outline">
+            <span class="btn-text">View All Packages</span>
+            <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="newsletter">
+    <div class="newsletter-content">
+        <h2>Ready for Your Next Adventure?</h2>
+        <p>Subscribe to our newsletter and get exclusive travel deals and updates!</p>
+        <form class="newsletter-form">
+            <input type="email" placeholder="Enter your email address" required>
+            <button type="submit"><i class="fas fa-paper-plane"></i> Subscribe</button>
+        </form>
+    </div>
+</section>
+
+<script>
+// Hero Slideshow
+document.addEventListener('DOMContentLoaded', function() {
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.hero-dots .dot');
+    let currentSlide = 0;
+    let slideInterval;
+
+    function goToSlide(index) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+        
+        slides[index].classList.add('active');
+        dots[index].classList.add('active');
+        currentSlide = index;
+    }
+
+    function nextSlide() {
+        let next = (currentSlide + 1) % slides.length;
+        goToSlide(next);
+    }
+
+    function startSlideshow() {
+        slideInterval = setInterval(nextSlide, 4000);
+    }
+
+    function stopSlideshow() {
+        clearInterval(slideInterval);
+    }
+
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', function() {
+            stopSlideshow();
+            goToSlide(index);
+            startSlideshow();
+        });
+    });
+
+    const hero = document.querySelector('.hero');
+    hero.addEventListener('mouseenter', stopSlideshow);
+    hero.addEventListener('mouseleave', startSlideshow);
+
+    startSlideshow();
+});
+</script>
+
+<%- include('partials/footer') %>
