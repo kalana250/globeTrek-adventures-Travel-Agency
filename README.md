@@ -2,20 +2,7 @@
 
 A full-stack web application for a travel and tourism management company. This platform allows customers to browse, book, and manage travel packages, while staff and administrators can manage content and operations efficiently.
 
-## 📋 Table of Contents
 
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Database Setup](#database-setup)
-- [Environment Variables](#environment-variables)
-- [Running the Application](#running-the-application)
-- [User Roles](#user-roles)
-- [Screenshots](#screenshots)
-- [License](#license)
-
----
 
 ## ✨ Features
 
