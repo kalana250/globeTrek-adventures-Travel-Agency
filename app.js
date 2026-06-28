@@ -2,7 +2,6 @@ const express = require('express');
 const session = require('express-session');
 const dotenv = require('dotenv');
 const path = require('path');
-const db = require('./config/db');
 
 dotenv.config();
 
@@ -36,293 +35,219 @@ app.use((req, res, next) => {
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// ========== MOCK DATA (No Database) ==========
+// Sample packages data
+const packages = [
+    {
+        id: 1,
+        title: 'Sri Lanka Heritage Tour',
+        destination: 'Kandy, Sri Lanka',
+        description: 'Explore the cultural triangle of Sri Lanka with ancient temples and scenic beauty.',
+        activities: 'Temple visits, Cultural shows, Nature walks, Traditional cuisine',
+        price: 299.99,
+        duration_days: 5,
+        image_url: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800&h=500&fit=crop&crop=center',
+        available_seats: 15
+    },
+    {
+        id: 2,
+        title: 'Maldives Island Getaway',
+        destination: 'Male, Maldives',
+        description: 'Luxury island resort experience with crystal clear waters.',
+        activities: 'Snorkeling, Diving, Beach activities, Sunset cruises',
+        price: 599.99,
+        duration_days: 4,
+        image_url: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800&h=500&fit=crop&crop=center',
+        available_seats: 8
+    },
+    {
+        id: 3,
+        title: 'Singapore City Explorer',
+        destination: 'Singapore',
+        description: 'Modern city adventure with futuristic architecture.',
+        activities: 'Gardens by the Bay, Sentosa Island, Shopping, Street food',
+        price: 399.99,
+        duration_days: 3,
+        image_url: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=800&h=500&fit=crop&crop=center',
+        available_seats: 12
+    },
+    {
+        id: 4,
+        title: 'Paris Romantic Getaway',
+        destination: 'Paris, France',
+        description: 'The city of love awaits! Explore iconic landmarks and charming cafes.',
+        activities: 'Eiffel Tower visit, Louvre Museum tour, Seine river cruise, French cuisine',
+        price: 699.99,
+        duration_days: 5,
+        image_url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&h=500&fit=crop&crop=center',
+        available_seats: 8
+    }
+];
+
+// Mock users (for demo)
+const users = [];
+
 // ========== ROUTES ==========
 
 // Home Page
-app.get('/', async (req, res) => {
-    try {
-        const [packages] = await db.query('SELECT * FROM packages ORDER BY created_at DESC LIMIT 3');
-        res.render('index', { packages });
-    } catch (error) {
-        console.error('Error fetching packages:', error);
-        res.render('index', { packages: [] });
-    }
+app.get('/', (req, res) => {
+    res.render('index', { packages: packages.slice(0, 3) });
 });
 
-// ✅ ABOUT PAGE - ADD THIS ROUTE
+// About Page
 app.get('/about', (req, res) => {
     res.render('about');
 });
 
-// ===== AUTH ROUTES =====
+// Packages Page
+app.get('/packages', (req, res) => {
+    const { search, destination, minPrice, maxPrice } = req.query;
+    let filteredPackages = packages;
+    
+    if (search) {
+        filteredPackages = filteredPackages.filter(p => 
+            p.title.toLowerCase().includes(search.toLowerCase()) ||
+            p.destination.toLowerCase().includes(search.toLowerCase())
+        );
+    }
+    if (destination) {
+        filteredPackages = filteredPackages.filter(p => 
+            p.destination === destination
+        );
+    }
+    if (minPrice) {
+        filteredPackages = filteredPackages.filter(p => 
+            p.price >= parseFloat(minPrice)
+        );
+    }
+    if (maxPrice) {
+        filteredPackages = filteredPackages.filter(p => 
+            p.price <= parseFloat(maxPrice)
+        );
+    }
+    
+    const destinations = [...new Set(packages.map(p => p.destination))];
+    res.render('packages', { 
+        packages: filteredPackages, 
+        destinations: destinations, 
+        filters: req.query 
+    });
+});
+
+// Package Detail
+app.get('/packages/:id', (req, res) => {
+    const pkg = packages.find(p => p.id === parseInt(req.params.id));
+    if (!pkg) return res.redirect('/packages');
+    res.render('package-detail', { package: pkg });
+});
+
+// Login
 app.get('/login', (req, res) => {
     if (req.session.user) return res.redirect('/dashboard');
     res.render('login', { error: null });
 });
 
-app.post('/login', async (req, res) => {
+app.post('/login', (req, res) => {
     const { email, password } = req.body;
-    try {
-        const [users] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-        if (users.length === 0) {
-            return res.render('login', { error: 'Invalid email or password' });
-        }
-        const user = users[0];
-        const bcrypt = require('bcryptjs');
-        const validPassword = await bcrypt.compare(password, user.password);
-        if (!validPassword) {
-            return res.render('login', { error: 'Invalid email or password' });
-        }
+    // Mock login - accepts any email/password
+    if (email && password) {
         req.session.user = {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role
+            id: 1,
+            name: email.split('@')[0],
+            email: email,
+            role: 'customer'
         };
-        res.redirect('/dashboard');
-    } catch (error) {
-        console.error('Login error:', error);
-        res.render('login', { error: 'Login failed. Please try again.' });
+        return res.redirect('/dashboard');
     }
+    res.render('login', { error: 'Invalid email or password' });
 });
 
+// Register
 app.get('/register', (req, res) => {
     if (req.session.user) return res.redirect('/dashboard');
     res.render('register', { error: null });
 });
 
-app.post('/register', async (req, res) => {
+app.post('/register', (req, res) => {
     const { name, email, password, confirm_password } = req.body;
     if (password !== confirm_password) {
         return res.render('register', { error: 'Passwords do not match' });
     }
-    try {
-        const bcrypt = require('bcryptjs');
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await db.query(
-            'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-            [name, email, hashedPassword]
-        );
-        res.redirect('/login');
-    } catch (error) {
-        if (error.code === 'ER_DUP_ENTRY') {
-            return res.render('register', { error: 'Email already registered' });
-        }
-        console.error('Registration error:', error);
-        res.render('register', { error: 'Registration failed. Please try again.' });
-    }
+    req.session.user = {
+        id: users.length + 1,
+        name: name,
+        email: email,
+        role: 'customer'
+    };
+    res.redirect('/dashboard');
 });
 
+// Logout
 app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
 
-// ===== DASHBOARD =====
-app.get('/dashboard', async (req, res) => {
+// Dashboard
+app.get('/dashboard', (req, res) => {
     if (!req.session.user) return res.redirect('/login');
-    try {
-        const [bookings] = await db.query(
-            `SELECT b.*, p.title, p.destination, p.price 
-             FROM bookings b 
-             JOIN packages p ON b.package_id = p.id 
-             WHERE b.user_id = ? 
-             ORDER BY b.created_at DESC`,
-            [req.session.user.id]
-        );
-        res.render('dashboard', { bookings });
-    } catch (error) {
-        console.error('Dashboard error:', error);
-        res.render('dashboard', { bookings: [] });
-    }
+    // Mock bookings
+    const bookings = [];
+    res.render('dashboard', { bookings });
 });
 
-// ===== PACKAGE ROUTES =====
-app.get('/packages', async (req, res) => {
-    const { search, destination, minPrice, maxPrice } = req.query;
-    let query = 'SELECT * FROM packages WHERE 1=1';
-    const params = [];
-    
-    if (search) {
-        query += ' AND (title LIKE ? OR destination LIKE ? OR description LIKE ?)';
-        const searchTerm = `%${search}%`;
-        params.push(searchTerm, searchTerm, searchTerm);
-    }
-    if (destination) {
-        query += ' AND destination = ?';
-        params.push(destination);
-    }
-    if (minPrice) {
-        query += ' AND price >= ?';
-        params.push(minPrice);
-    }
-    if (maxPrice) {
-        query += ' AND price <= ?';
-        params.push(maxPrice);
-    }
-    query += ' ORDER BY created_at DESC';
-    
-    try {
-        const [packages] = await db.query(query, params);
-        const [destinations] = await db.query('SELECT DISTINCT destination FROM packages');
-        res.render('packages', { 
-            packages: packages, 
-            destinations: destinations, 
-            filters: req.query 
-        });
-    } catch (error) {
-        console.error('Error fetching packages:', error);
-        res.render('packages', { 
-            packages: [], 
-            destinations: [], 
-            filters: {} 
-        });
-    }
-});
-
-app.get('/packages/:id', async (req, res) => {
-    try {
-        const [packages] = await db.query('SELECT * FROM packages WHERE id = ?', [req.params.id]);
-        if (packages.length === 0) return res.redirect('/packages');
-        res.render('package-detail', { package: packages[0] });
-    } catch (error) {
-        console.error('Error fetching package detail:', error);
-        res.redirect('/packages');
-    }
-});
-
-// ===== BOOKING ROUTES =====
-app.get('/book/:packageId', async (req, res) => {
+// Booking
+app.get('/book/:packageId', (req, res) => {
     if (!req.session.user) return res.redirect('/login');
-    try {
-        const [packages] = await db.query('SELECT * FROM packages WHERE id = ?', [req.params.packageId]);
-        if (packages.length === 0) return res.redirect('/packages');
-        res.render('booking', { 
-            package: packages[0], 
-            error: null 
-        });
-    } catch (error) {
-        console.error('Error loading booking:', error);
-        res.redirect('/packages');
-    }
+    const pkg = packages.find(p => p.id === parseInt(req.params.packageId));
+    if (!pkg) return res.redirect('/packages');
+    res.render('booking', { package: pkg, error: null });
 });
 
-app.post('/book', async (req, res) => {
+app.post('/book', (req, res) => {
     if (!req.session.user) return res.redirect('/login');
-    const { package_id, travelers, booking_date, special_requirements } = req.body;
-    try {
-        const [pkg] = await db.query('SELECT * FROM packages WHERE id = ?', [package_id]);
-        if (pkg.length === 0) return res.redirect('/packages');
-        const total_price = pkg[0].price * travelers;
-        await db.query(
-            'INSERT INTO bookings (user_id, package_id, travelers, booking_date, total_price, special_requirements) VALUES (?, ?, ?, ?, ?, ?)',
-            [req.session.user.id, package_id, travelers, booking_date, total_price, special_requirements || null]
-        );
-        res.redirect('/dashboard');
-    } catch (error) {
-        console.error('Booking error:', error);
-        res.redirect('/book/' + package_id);
-    }
+    res.redirect('/dashboard');
 });
 
-// ===== INQUIRY ROUTES =====
+// Contact/Inquiry
 app.get('/contact', (req, res) => {
     res.render('inquiry', { success: null, error: null });
 });
 
-app.post('/contact', async (req, res) => {
+app.post('/contact', (req, res) => {
     if (!req.session.user) return res.redirect('/login');
-    const { subject, message } = req.body;
-    try {
-        await db.query(
-            'INSERT INTO inquiries (user_id, subject, message) VALUES (?, ?, ?)',
-            [req.session.user.id, subject, message]
-        );
-        res.render('inquiry', { success: 'Your inquiry has been sent successfully!', error: null });
-    } catch (error) {
-        console.error('Inquiry error:', error);
-        res.render('inquiry', { success: null, error: 'Failed to send inquiry. Please try again.' });
-    }
+    res.render('inquiry', { success: 'Your inquiry has been sent successfully!', error: null });
 });
 
-// ===== FORGOT PASSWORD =====
+// Forgot Password
 app.get('/forgot-password', (req, res) => {
     res.render('forgot-password', { message: null, error: null });
 });
 
-app.post('/forgot-password', async (req, res) => {
-    const { email } = req.body;
-    try {
-        const [users] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-        if (users.length === 0) {
-            return res.render('forgot-password', { 
-                message: null, 
-                error: 'Email not found' 
-            });
-        }
-        const token = require('crypto').randomBytes(32).toString('hex');
-        const expiry = new Date(Date.now() + 3600000);
-        await db.query(
-            'UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?',
-            [token, expiry, email]
-        );
-        res.render('forgot-password', { 
-            message: 'Password reset link has been sent to your email', 
-            error: null 
-        });
-    } catch (error) {
-        console.error('Password reset error:', error);
-        res.render('forgot-password', { 
-            message: null, 
-            error: 'Something went wrong' 
-        });
-    }
+app.post('/forgot-password', (req, res) => {
+    res.render('forgot-password', { 
+        message: 'Password reset link has been sent to your email', 
+        error: null 
+    });
 });
 
-// ===== ADMIN ROUTES =====
-app.get('/admin', async (req, res) => {
+// Admin
+app.get('/admin', (req, res) => {
     if (!req.session.user || req.session.user.role !== 'admin') {
         return res.redirect('/login');
     }
-    try {
-        const [users] = await db.query('SELECT * FROM users');
-        const [packages] = await db.query('SELECT * FROM packages');
-        const [bookings] = await db.query('SELECT b.*, u.name, p.title FROM bookings b JOIN users u ON b.user_id = u.id JOIN packages p ON b.package_id = p.id');
-        const [inquiries] = await db.query('SELECT i.*, u.name FROM inquiries i JOIN users u ON i.user_id = u.id ORDER BY i.created_at DESC');
-        
-        res.render('admin', { 
-            users, 
-            packages, 
-            bookings, 
-            inquiries,
-            stats: {
-                totalUsers: users.length,
-                totalPackages: packages.length,
-                totalBookings: bookings.length,
-                totalInquiries: inquiries.length
-            }
-        });
-    } catch (error) {
-        console.error('Admin error:', error);
-        res.redirect('/dashboard');
-    }
-});
-
-app.post('/admin/package', async (req, res) => {
-    if (!req.session.user || req.session.user.role !== 'admin') {
-        return res.status(403).json({ error: 'Unauthorized' });
-    }
-    const { title, destination, description, activities, price, duration_days, image_url, available_seats } = req.body;
-    try {
-        await db.query(
-            'INSERT INTO packages (title, destination, description, activities, price, duration_days, image_url, available_seats) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [title, destination, description, activities, price, duration_days, image_url, available_seats]
-        );
-        res.redirect('/admin');
-    } catch (error) {
-        console.error('Add package error:', error);
-        res.redirect('/admin');
-    }
+    res.render('admin', { 
+        users: users, 
+        packages: packages, 
+        bookings: [],
+        inquiries: [],
+        stats: {
+            totalUsers: users.length,
+            totalPackages: packages.length,
+            totalBookings: 0,
+            totalInquiries: 0
+        }
+    });
 });
 
 // Start Server
